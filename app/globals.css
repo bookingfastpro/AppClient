@@ -1,0 +1,315 @@
+@import "tailwindcss";
+
+/*
+  Design tokens mirror DESIGN.md exactly — DESIGN.md is the source of truth.
+  Every neutral shares the same warm ~75-85deg hue (The Warm Neutral Rule);
+  never introduce a cool gray or pure black/white here.
+*/
+:root {
+  /*
+    The page ground is a warm off-white; cards and inputs stay pure white
+    so they read as elevated against it. Everything below the ground
+    (fills, borders, shadows) is a true gray at chroma 0.
+  */
+  --color-cream: #faf6ef;
+  --color-surface: oklch(100% 0 0);
+  --color-sand: oklch(96.5% 0 0);
+  --color-beige: oklch(91% 0 0);
+  /*
+    Ink carries only a whisper of the forest hue, not the old warm brown:
+    against a pure-white page a browned text is what still read as
+    "beige". It lands as near-black / neutral gray, tied to the brand
+    rather than to a colour temperature.
+  */
+  --color-ink-900: oklch(20% 0.01 155);
+  --color-ink-600: oklch(46% 0.008 155);
+  --color-ink-300: oklch(65% 0.006 155);
+
+  /* Sage / Forest (primary identity) */
+  --color-sage-50: oklch(96% 0.02 150);
+  --color-sage-100: oklch(92% 0.035 150);
+  --color-sage-300: oklch(80% 0.05 150);
+  --color-sage-500: oklch(62% 0.07 150);
+  --color-sage-600: #5f6b4f;
+  /* Pressed/hover step: the same hue taken down in lightness. */
+  --color-sage-700: #4e583f;
+  --color-forest-800: oklch(32% 0.06 155);
+  --color-forest-900: oklch(24% 0.045 155);
+
+  /* Terracotta (premium-only, see The One Spark Rule) */
+  --color-terracotta-500: oklch(62% 0.13 40);
+  --color-terracotta-600: oklch(54% 0.14 38);
+
+  /*
+    Mood palette — the only place in the app where hues outside the
+    warm-neutral / sage system are allowed. Scoped exclusively to the
+    "Comment te sens-tu aujourd'hui ?" tiles on the home screen, where
+    each need has to be told apart at a glance. Backgrounds sit at ~93%
+    lightness and very low chroma so they read as soft paper tints, not
+    as UI color; only the glyph carries real saturation. None of these
+    approach terracotta's hue, so the premium spark stays unambiguous.
+  */
+  --color-mood-warm-bg: oklch(94% 0.022 75);
+  --color-mood-warm-fg: oklch(38% 0.04 60);
+  --color-mood-peach-bg: oklch(93% 0.032 55);
+  --color-mood-peach-fg: oklch(40% 0.05 50);
+  --color-mood-amber-bg: oklch(93% 0.055 80);
+  --color-mood-amber-fg: oklch(65% 0.145 70);
+  --color-mood-rose-bg: oklch(92% 0.04 18);
+  --color-mood-rose-fg: oklch(60% 0.16 18);
+  --color-mood-green-bg: oklch(93% 0.055 140);
+  --color-mood-green-fg: oklch(57% 0.135 145);
+  --color-mood-violet-bg: oklch(92% 0.04 300);
+  --color-mood-violet-fg: oklch(55% 0.14 300);
+  --color-mood-blue-bg: oklch(93% 0.045 245);
+  --color-mood-blue-fg: oklch(57% 0.125 250);
+
+  /*
+    The active tab in the bottom bar. Deliberately its own token rather
+    than terracotta: the two are close in hue, but terracotta means
+    "premium" everywhere else and must stay unambiguous.
+  */
+  --color-nav-active: #b86b4f;
+
+  /* Semantic */
+  --color-error: oklch(52% 0.15 25);
+
+  /* Radius */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-pill: 999px;
+
+  /* Shadow — neutral, matching the untinted surfaces above. */
+  --shadow-ambient-low: 0 2px 8px oklch(20% 0 0 / 0.06);
+  --shadow-ambient-md: 0 8px 24px oklch(20% 0 0 / 0.09);
+  --shadow-ambient-lg: 0 16px 48px oklch(20% 0 0 / 0.12);
+
+  /* Motion */
+  --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 400ms;
+
+  /* Safe area */
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* App shell */
+  --header-height: 64px;
+  --bottom-nav-height: 64px;
+}
+
+@theme inline {
+  --color-cream: var(--color-cream);
+  --color-surface: var(--color-surface);
+  --color-sand: var(--color-sand);
+  --color-beige: var(--color-beige);
+  --color-ink-900: var(--color-ink-900);
+  --color-ink-600: var(--color-ink-600);
+  --color-ink-300: var(--color-ink-300);
+
+  --color-sage-50: var(--color-sage-50);
+  --color-sage-100: var(--color-sage-100);
+  --color-sage-300: var(--color-sage-300);
+  --color-sage-500: var(--color-sage-500);
+  --color-sage-600: var(--color-sage-600);
+  --color-sage-700: var(--color-sage-700);
+  --color-forest-800: var(--color-forest-800);
+  --color-forest-900: var(--color-forest-900);
+
+  --color-terracotta-500: var(--color-terracotta-500);
+  --color-terracotta-600: var(--color-terracotta-600);
+
+  --color-mood-warm-bg: var(--color-mood-warm-bg);
+  --color-mood-warm-fg: var(--color-mood-warm-fg);
+  --color-mood-peach-bg: var(--color-mood-peach-bg);
+  --color-mood-peach-fg: var(--color-mood-peach-fg);
+  --color-mood-amber-bg: var(--color-mood-amber-bg);
+  --color-mood-amber-fg: var(--color-mood-amber-fg);
+  --color-mood-rose-bg: var(--color-mood-rose-bg);
+  --color-mood-rose-fg: var(--color-mood-rose-fg);
+  --color-mood-green-bg: var(--color-mood-green-bg);
+  --color-mood-green-fg: var(--color-mood-green-fg);
+  --color-mood-violet-bg: var(--color-mood-violet-bg);
+  --color-mood-violet-fg: var(--color-mood-violet-fg);
+  --color-mood-blue-bg: var(--color-mood-blue-bg);
+  --color-mood-blue-fg: var(--color-mood-blue-fg);
+
+  --color-nav-active: var(--color-nav-active);
+
+  --color-error: var(--color-error);
+
+  --radius-xs: var(--radius-xs);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-pill: var(--radius-pill);
+
+  --shadow-ambient-low: var(--shadow-ambient-low);
+  --shadow-ambient-md: var(--shadow-ambient-md);
+  --shadow-ambient-lg: var(--shadow-ambient-lg);
+
+  --ease-standard: var(--ease-standard);
+  --duration-fast: var(--duration-fast);
+  --duration-base: var(--duration-base);
+  --duration-slow: var(--duration-slow);
+
+  --font-display: var(--font-playfair), Georgia, serif;
+  --font-sans: var(--font-jakarta), system-ui, sans-serif;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-beige);
+    /* Removes the ~300ms tap delay and double-tap-to-zoom mobile
+       browsers apply by default — the single biggest reason a web app
+       feels like a "page" instead of an installed app. */
+    touch-action: manipulation;
+    /* Native apps don't flash a gray box on tap; our own :active states
+       (scale/color) already provide feedback. */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--color-cream);
+    color: var(--color-ink-900);
+    font-family: var(--font-sans);
+    /* Contains scroll to the app shell instead of letting the browser
+       chrome bounce/pull-to-refresh past it — reads as a native
+       container rather than a scrollable document. */
+    overscroll-behavior-y: contain;
+  }
+
+  /*
+    Headings inherit the body sans. The serif is reserved for the
+    wordmark (The Serif-Is-The-Logo Rule), which is a link rather than a
+    heading, so defaulting headings to it silently pulled the serif back
+    into card titles and anywhere else lacking an explicit type class.
+  */
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.01em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  .pt-safe {
+    padding-top: var(--safe-area-top);
+  }
+  .pb-safe {
+    padding-bottom: var(--safe-area-bottom);
+  }
+
+  /*
+    Forces a landscape-looking player on a portrait phone screen even when
+    the Screen Orientation lock API isn't available (notably iOS Safari):
+    pin to the viewport, swap width/height, then rotate 90deg around the
+    center so the rotated box exactly covers the original viewport.
+  */
+  .rotated-player {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    top: 50%;
+    left: 50%;
+    width: 100vh;
+    height: 100vw;
+    transform: translate(-50%, -50%) rotate(90deg);
+    border-radius: 0;
+  }
+}
+
+/*
+  Page-load choreography: sections fade + rise into place with a short
+  staggered delay (set per-section via [animation-delay:Nms]), never
+  looping or re-triggering on scroll. Kept under ~500ms per DESIGN.md's
+  restraint principle. prefers-reduced-motion is handled globally above
+  (collapses all animation-duration to ~0), so this needs no separate guard.
+*/
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  opacity: 0;
+  animation: fade-in-up var(--duration-slow) var(--ease-standard) forwards;
+}
+
+/*
+  Typography hierarchy — mirrors DESIGN.md section 3 exactly.
+
+  The serif is the logo, and only the logo. Every piece of running text,
+  page titles included, is bold Plus Jakarta Sans: one voice for the
+  interface, set apart from the wordmark that sits above it. Display and
+  headline differ by size and nothing else, which is what keeps the
+  hierarchy legible without introducing a second typeface mid-page.
+*/
+@layer components {
+  .text-display {
+    font-family: var(--font-sans);
+    font-size: clamp(2.125rem, 5.5vw, 3.25rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+  }
+
+  .text-headline {
+    font-family: var(--font-sans);
+    font-size: clamp(1.25rem, 3vw, 1.5rem);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+  }
+
+  .text-title {
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: -0.005em;
+  }
+
+  .text-body {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.6;
+    max-width: 70ch;
+  }
+
+  .text-label {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+}

@@ -1,0 +1,13 @@
+node_modules
+.next
+.git
+.claude
+.impeccable
+*.md
+!README.md
+.env
+.env.*
+!.env.example
+coverage
+supabase/.branches
+supabase/.temp

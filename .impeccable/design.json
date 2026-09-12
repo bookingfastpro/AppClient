@@ -1,0 +1,178 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-09T00:00:00Z",
+  "title": "Design System: Wellness App",
+  "extensions": {
+    "colorMeta": {
+      "sage-600": {
+        "role": "primary",
+        "displayName": "Sage",
+        "canonical": "#5f6b4f",
+        "tonalRamp": [
+          "oklch(18% 0.035 152)",
+          "oklch(28% 0.05 152)",
+          "oklch(38% 0.065 152)",
+          "oklch(44% 0.075 153)",
+          "oklch(52% 0.08 152)",
+          "oklch(62% 0.07 150)",
+          "oklch(80% 0.05 150)",
+          "oklch(92% 0.035 150)"
+        ]
+      },
+      "forest-800": {
+        "role": "secondary",
+        "displayName": "Forest",
+        "canonical": "oklch(32% 0.06 155)",
+        "tonalRamp": [
+          "oklch(14% 0.03 155)",
+          "oklch(24% 0.045 155)",
+          "oklch(32% 0.06 155)",
+          "oklch(40% 0.065 155)",
+          "oklch(50% 0.07 153)",
+          "oklch(62% 0.07 150)",
+          "oklch(80% 0.05 150)",
+          "oklch(92% 0.035 150)"
+        ]
+      },
+      "terracotta-500": {
+        "role": "tertiary",
+        "displayName": "Terracotta",
+        "canonical": "oklch(62% 0.13 40)",
+        "tonalRamp": [
+          "oklch(20% 0.06 40)",
+          "oklch(32% 0.09 40)",
+          "oklch(44% 0.12 40)",
+          "oklch(54% 0.14 38)",
+          "oklch(62% 0.13 40)",
+          "oklch(72% 0.11 42)",
+          "oklch(85% 0.07 45)",
+          "oklch(94% 0.03 50)"
+        ]
+      },
+      "cream": {
+        "role": "neutral",
+        "displayName": "Warm Cream",
+        "canonical": "#faf6ef",
+        "tonalRamp": [
+          "oklch(20% 0.01 155)",
+          "oklch(46% 0.008 155)",
+          "oklch(65% 0.006 155)",
+          "oklch(91% 0 0)",
+          "oklch(96.5% 0 0)",
+          "oklch(100% 0 0)",
+          "oklch(100% 0 0)",
+          "oklch(99.3% 0.003 85)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Greeting and page-opening titles, in bold Plus Jakarta Sans." },
+      "headline": { "displayName": "Headline", "purpose": "Section titles such as 'Recommended for you'." },
+      "title": { "displayName": "Title", "purpose": "Card and video titles." },
+      "body": { "displayName": "Body", "purpose": "Descriptions and paragraph copy, capped at 70ch." },
+      "label": { "displayName": "Label", "purpose": "Metadata, chips, nav labels — uppercase, tracked." }
+    },
+    "shadows": [
+      { "name": "ambient-low", "value": "0 2px 8px oklch(20% 0 0 / 0.06)", "purpose": "Resting elevation for app-shell header and bottom nav." },
+      { "name": "ambient-md", "value": "0 8px 24px oklch(20% 0 0 / 0.09)", "purpose": "Sheets, dropdowns, floating toasts." },
+      { "name": "ambient-lg", "value": "0 16px 48px oklch(20% 0 0 / 0.12)", "purpose": "Full-screen video player controls overlay only." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Default exponential ease-out for entrances and state transitions." },
+      { "name": "duration-fast", "value": "150ms", "purpose": "Nav tab switches, button press feedback." },
+      { "name": "duration-base", "value": "250ms", "purpose": "Sheet/modal open, card hover." },
+      { "name": "duration-slow", "value": "400ms", "purpose": "Staggered entrance reveals, per-element cap." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main CTA button, pill-shaped, sage background.",
+      "html": "<button class=\"ds-btn-primary\">Start membership</button>",
+      "css": ".ds-btn-primary { background: #5f6b4f; color: oklch(100% 0 0); font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-weight: 600; font-size: 1rem; padding: 14px 28px; border: none; border-radius: 999px; cursor: pointer; transition: background 150ms cubic-bezier(0.16,1,0.3,1), transform 150ms cubic-bezier(0.16,1,0.3,1); } .ds-btn-primary:hover { background: #4e583f; transform: translateY(-1px); } .ds-btn-primary:focus-visible { outline: 2px solid oklch(62% 0.07 150); outline-offset: 2px; } .ds-btn-primary:active { transform: translateY(0); }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary action button, surface background with hairline border.",
+      "html": "<button class=\"ds-btn-ghost\">Manage subscription</button>",
+      "css": ".ds-btn-ghost { background: oklch(100% 0 0); color: oklch(20% 0.01 155); font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-weight: 600; font-size: 1rem; padding: 14px 28px; border: 1px solid oklch(91% 0 0); border-radius: 999px; cursor: pointer; transition: background 150ms cubic-bezier(0.16,1,0.3,1); } .ds-btn-ghost:hover { background: oklch(96.5% 0 0); } .ds-btn-ghost:focus-visible { outline: 2px solid oklch(62% 0.07 150); outline-offset: 2px; }"
+    },
+    {
+      "name": "Premium Badge",
+      "kind": "chip",
+      "refersTo": "premium-badge",
+      "description": "Small pill badge marking premium-only video content.",
+      "html": "<span class=\"ds-premium-badge\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\"><path d=\"M6 10V8a6 6 0 0 1 12 0v2M5 10h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1Z\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>Premium</span>",
+      "css": ".ds-premium-badge { display: inline-flex; align-items: center; gap: 4px; background: oklch(62% 0.13 40); color: oklch(100% 0 0); font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-weight: 600; font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }"
+    },
+    {
+      "name": "Video Card",
+      "kind": "card",
+      "refersTo": "video-card",
+      "description": "Standard catalog video card with thumbnail, title, and metadata row.",
+      "html": "<div class=\"ds-video-card\"><div class=\"ds-video-card-thumb\"><span class=\"ds-video-card-badge\">Premium</span></div><div class=\"ds-video-card-body\"><h3 class=\"ds-video-card-title\">Morning Flow</h3><p class=\"ds-video-card-meta\">15 min &middot; Beginner &middot; Yoga</p></div></div>",
+      "css": ".ds-video-card { background: oklch(100% 0 0); border-radius: 24px; overflow: hidden; box-shadow: 0 2px 8px oklch(20% 0 0 / 0.06); transition: transform 250ms cubic-bezier(0.16,1,0.3,1); } .ds-video-card:hover { transform: translateY(-2px); } .ds-video-card-thumb { position: relative; aspect-ratio: 16/9; background: oklch(80% 0.05 150); } .ds-video-card-badge { position: absolute; top: 10px; right: 10px; background: oklch(62% 0.13 40); color: oklch(100% 0 0); font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-weight: 600; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; } .ds-video-card-body { padding: 12px; } .ds-video-card-title { margin: 0 0 4px; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-weight: 600; font-size: 1.125rem; color: oklch(20% 0.01 155); } .ds-video-card-meta { margin: 0; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-weight: 400; font-size: 0.8125rem; color: oklch(46% 0.008 155); }"
+    },
+    {
+      "name": "Bottom Tab Nav Item",
+      "kind": "nav",
+      "refersTo": "bottom-nav",
+      "description": "Single tab in the mobile bottom navigation, active and inactive states.",
+      "html": "<button class=\"ds-nav-item ds-nav-item--active\"><span class=\"ds-nav-item-icon\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\"><path d=\"m3 12 9-9 9 9M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span><span class=\"ds-nav-item-label\">Home</span></button>",
+      "css": ".ds-nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: none; padding: 8px 18px; border-radius: 16px; cursor: pointer; color: oklch(65% 0.006 155); font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-size: 0.7rem; font-weight: 600; transition: color 150ms cubic-bezier(0.16,1,0.3,1), background 150ms cubic-bezier(0.16,1,0.3,1); } .ds-nav-item--active { color: oklch(52% 0.08 152); background: oklch(96% 0.02 150); } .ds-nav-item:focus-visible { outline: 2px solid oklch(62% 0.07 150); outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Standard text input for auth forms and search.",
+      "html": "<input class=\"ds-input\" type=\"email\" placeholder=\"you@example.com\" />",
+      "css": ".ds-input { width: 100%; background: oklch(100% 0 0); border: 1px solid oklch(91% 0 0); border-radius: 16px; padding: 14px 16px; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-size: 1rem; color: oklch(20% 0.01 155); transition: border-color 150ms cubic-bezier(0.16,1,0.3,1), background 150ms cubic-bezier(0.16,1,0.3,1); } .ds-input::placeholder { color: oklch(65% 0.006 155); } .ds-input:focus { outline: none; border-color: oklch(62% 0.07 150); background: oklch(96% 0.02 150); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Yogella, the Quiet Studio",
+    "overview": "Picture a small, sunlit yoga studio at 7am: raw plaster walls, a linen mat, one low shelf, light coming through linen curtains. Nothing shouts. The room is warm because of materials, not decoration. That is the interface: a calm surface built from a small set of well-chosen warm neutrals, with sage and forest green standing in for the plants at the edge of the room, and terracotta appearing only as rarely as a single ceramic bowl would on that shelf. This system explicitly rejects the generic SaaS dashboard, the default Tailwind-template look, a website simply narrowed to mobile width, AI-landing-page cliches, and any hint of neon, electric blue, aggressive purple gradients, gaming/crypto aesthetics, or excessive glassmorphism. Nothing here is loud. Distinctiveness comes from restraint, warm material color, and an editorial serif at large sizes, not from extreme weight contrast or saturated color coverage.",
+    "keyCharacteristics": [
+      "Warm neutral surface that reads as material, not as 'white background'",
+      "Sage and forest green carry primary actions and identity; committed enough to be recognizable, never more than a supporting third of any screen",
+      "Terracotta is reserved exclusively for premium/upsell moments",
+      "Playfair Display is the wordmark only; every heading in the product is bold Plus Jakarta Sans",
+      "Flat-by-default surfaces with tonal layering; shadow only appears for genuinely floating elements"
+    ],
+    "rules": [
+      { "name": "The One Spark Rule", "body": "Terracotta is premium-only. It never appears on free content, navigation, or generic UI chrome.", "section": "colors" },
+      { "name": "The Warm Neutral Rule", "body": "Every neutral shares the same ~75-85° warm hue at low chroma (0.007-0.035). A 'gray' that doesn't carry this hue is a bug.", "section": "colors" },
+      { "name": "The Restraint-Over-Extremity Rule", "body": "Hierarchy comes from font choice, size, and optical character, not from stacking 200-weight against 900-weight. Display type stays in the 300-450 weight band.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "A card at rest never has a shadow. Shadows appear only in response to something being above the base plane.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use sage-600 as the one committed identity color for every primary action and active state.",
+      "Do vary card treatment by context (featured hero vs. carousel card vs. compact list row).",
+      "Do keep terracotta exclusively on premium/upsell surfaces.",
+      "Do reserve Playfair Display for the Yogella wordmark alone, and set every other heading in bold Plus Jakarta Sans.",
+      "Do respect prefers-reduced-motion on every animation.",
+      "Do keep every neutral warm-hue-tinted."
+    ],
+    "donts": [
+      "Don't build a generic SaaS dashboard: no sidebar, no KPI-card rows, no data-table chrome.",
+      "Don't use the default Tailwind gray scale, pure white, or pure black anywhere.",
+      "Don't use neon colors, electric blue, aggressive purple gradients, gaming or crypto aesthetics, or generic SaaS blue.",
+      "Don't use gradient text anywhere.",
+      "Don't use a colored border-left/border-right stripe as an accent.",
+      "Don't repeat the hero-metric SaaS template.",
+      "Don't stack more than one visually identical card grid in a row on the Home screen.",
+      "Don't apply a shadow to a card at rest with nothing floating above it."
+    ]
+  }
+}
