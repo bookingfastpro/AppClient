@@ -130,9 +130,30 @@ Health check: `GET /api/healthz` (pure liveness, no external calls).
 4. Set the health check path to `/api/healthz`.
 5. Configure your domain and HTTPS in Coolify, then register the Stripe webhook at `https://<your-domain>/api/stripe/webhook`.
 
+## PWA
+
+The app installs to a phone or desktop home screen and runs standalone.
+
+| Piece | File |
+| --- | --- |
+| Web app manifest (`/manifest.webmanifest`) | `app/manifest.ts` |
+| Service worker | `public/sw.js` |
+| Registration | `components/pwa/ServiceWorkerRegistration.tsx` |
+| Offline fallback page | `app/offline/page.tsx` |
+| Icons | `scripts/generate-icons.mjs` → `public/icons/`, `app/apple-icon.png` |
+
+**The service worker's caching rules are a security boundary, not a performance knob.** Yogella is cookie-authenticated, so a cached HTML document or RSC payload is how one member's account page gets served to the next person on a shared device. `public/sw.js` is therefore an allowlist: requests pass straight through to the network unless they match an explicit rule, and the only rules cover content-hashed build output under `/_next/static` and static images. Navigations are always fetched from the network and fall back to the precached offline page only when that fetch throws. Adding a rule that matches a document, an RSC payload, or `/api/*` reintroduces the bug.
+
+Bump `VERSION` in `public/sw.js` whenever those rules change; the activate handler evicts every cache that isn't in the current generation.
+
+The worker registers in production builds only — in development it would shadow freshly compiled chunks and edits would stop showing up. To exercise it locally, run `npm run build && npm run start` rather than `npm run dev`.
+
+After changing the mark in `app/icon.svg`, re-run `node scripts/generate-icons.mjs` to regenerate the PNG set.
+
 ## Troubleshooting
 
 - **"Your project's URL and Key are required to create a Supabase client"** — `.env.local` is missing or incomplete. Copy `.env.example` and fill in real values.
+- **An edit doesn't appear after deploying** — a client is still on the previous service worker. It updates on the next navigation after the new `/sw.js` is fetched; `VERSION` must be bumped for the old caches to be evicted.
 - **`/admin/videos` 404s for the account you expect to be admin** — `ADMIN_EMAIL` doesn't match that account's email exactly (case-insensitive, but no typos/whitespace), or it isn't set at all.
 - **Webhook returns 400 "Invalid signature"** — `STRIPE_WEBHOOK_SECRET` doesn't match the endpoint's signing secret in the Stripe Dashboard, or you're forwarding raw JSON instead of the exact request body.
 - **Premium video plays without a subscription** — check `lib/access/subscription.ts` and confirm the `subscriptions` row's `status` is actually being synced by the webhook; client-side subscription state is never trusted.

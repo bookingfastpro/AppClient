@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Yogella">
+  <!--
+    A letterform, not a leaf: at the 16px the browser tab actually renders,
+    any botanical silhouette collapses into an unreadable blob, while a Y
+    keeps its shape. Sage ground with a cream mark reuses the brand's own
+    button pairing rather than inventing a third colour relationship.
+    Stroked instead of filled so the weight stays even when the icon is
+    scaled down, with round caps to match the app's pill-shaped buttons.
+  -->
+  <rect width="32" height="32" rx="8" fill="#5f6b4f" />
+  <path
+    d="M10 9.5 16 17.5 22 9.5 M16 17.5 16 23.5"
+    fill="none"
+    stroke="#faf6ef"
+    stroke-width="3"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

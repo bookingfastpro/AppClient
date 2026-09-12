@@ -1,5 +1,6 @@
 import "server-only";
 import Stripe from "stripe";
+import { requireEnv } from "@/lib/env";
 
 let cached: Stripe | null = null;
 
@@ -12,7 +13,9 @@ let cached: Stripe | null = null;
  */
 export function getStripe() {
   if (!cached) {
-    cached = new Stripe(process.env.STRIPE_SECRET_KEY!, { typescript: true });
+    cached = new Stripe(requireEnv("STRIPE_SECRET_KEY", process.env.STRIPE_SECRET_KEY), {
+      typescript: true,
+    });
   }
   return cached;
 }
