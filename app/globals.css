@@ -308,6 +308,14 @@
     transition:
       opacity var(--duration-base) var(--ease-standard),
       transform var(--duration-base) var(--ease-standard);
+    /*
+      Promotes the panel to its own compositor layer before the slide
+      starts. Without it the first frames are spent rasterising a panel
+      that may hold a full-width cover image, which is exactly when the
+      animation is most visible. The panel only exists while the dialog
+      is open, so the layer is short-lived.
+    */
+    will-change: transform, opacity;
   }
 
   .modal[data-state="open"] .modal-panel {

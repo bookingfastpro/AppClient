@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import { getProgramBySlug } from "@/lib/db/queries";
 import { getUser } from "@/lib/auth/session";
 import { ProgramDetail } from "@/components/video/ProgramDetail";
-import { RouteModal } from "@/components/ui/RouteModal";
 
 /**
  * Intercepts /programmes/[slug] on a client-side navigation — a tap on a
@@ -14,9 +13,8 @@ import { RouteModal } from "@/components/ui/RouteModal";
  * `@modal` (a slot) is one. This therefore sits at the root level, where
  * `programmes` is a direct child.
  *
- * `hideTitle` keeps the programme's name as the dialog's accessible name
- * while letting the cover image lead, exactly as it does on the page. A
- * visible header above the cover would invert that order.
+ * The dialog itself is in layout.tsx, so that it stays mounted while
+ * loading.tsx hands over to this file.
  */
 export default async function InterceptedProgramPage({
   params,
@@ -28,16 +26,5 @@ export default async function InterceptedProgramPage({
   const result = await getProgramBySlug(slug, user?.id ?? null);
   if (!result) notFound();
 
-  // bodyClassName drops the modal's own padding: the cover image has to
-  // reach the panel's edges, so ProgramDetail carries its own instead.
-  return (
-    <RouteModal
-      title={result.program.title}
-      hideTitle
-      className="sm:max-w-lg"
-      bodyClassName="px-0 pt-0"
-    >
-      <ProgramDetail {...result} />
-    </RouteModal>
-  );
+  return <ProgramDetail {...result} />;
 }

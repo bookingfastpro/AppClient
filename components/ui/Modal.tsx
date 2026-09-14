@@ -69,8 +69,20 @@ export function Modal({
       // position, the second flips the attribute that transitions it in.
       // Without the gap the browser coalesces both into the end state
       // and nothing animates.
+      //
+      // The attribute is written straight to the DOM rather than through
+      // setState, and that ordering matters. Going through React put a
+      // full re-render of the panel — cover image and all — between the
+      // frame that should start the transition and the frame that
+      // actually did, which is long enough on a phone to drop the first
+      // frames and show as a stutter. React state is still updated, a
+      // beat later, so the closing logic has it; by then it is writing
+      // the value the DOM already has.
       const raf = requestAnimationFrame(() =>
-        requestAnimationFrame(() => setState("open")),
+        requestAnimationFrame(() => {
+          dialog.dataset.state = "open";
+          setState("open");
+        }),
       );
       return () => cancelAnimationFrame(raf);
     }
