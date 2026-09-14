@@ -44,26 +44,34 @@ export default async function VideoDetailPage({
 
   return (
     <div className="animate-fade-in-up flex flex-col gap-6">
-      {canPlay ? (
-        <VideoPlayer
-          youtubeId={video.youtube_id}
-          title={video.title}
-          videoId={video.id}
-          startAt={resumeAt}
-        />
-      ) : (
-        <div
-          className="relative aspect-video w-full overflow-hidden rounded-lg bg-cover bg-center"
-          style={{ backgroundImage: `url(${youtubeThumbnailUrl(video.youtube_id)})` }}
-        >
-          <div className="absolute inset-0 bg-forest-900/55" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="flex size-16 items-center justify-center rounded-pill bg-cream/90 text-forest-900 shadow-[var(--shadow-ambient-md)] backdrop-blur-sm">
-              <Lock className="size-7" aria-hidden />
-            </span>
+      {/*
+        Edge to edge on a phone: the app shell's px-4 was costing the
+        player 32px of width, which on a 375px screen is nearly a tenth
+        of the picture. The margins come back from md up, where the
+        column is already narrower than the viewport.
+      */}
+      <div className="-mx-4 md:mx-0">
+        {canPlay ? (
+          <VideoPlayer
+            youtubeId={video.youtube_id}
+            title={video.title}
+            videoId={video.id}
+            startAt={resumeAt}
+          />
+        ) : (
+          <div
+            className="relative aspect-video w-full overflow-hidden bg-cover bg-center md:rounded-lg"
+            style={{ backgroundImage: `url(${youtubeThumbnailUrl(video.youtube_id)})` }}
+          >
+            <div className="absolute inset-0 bg-forest-900/55" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="flex size-16 items-center justify-center rounded-pill bg-cream/90 text-forest-900 shadow-[var(--shadow-ambient-md)] backdrop-blur-sm">
+                <Lock className="size-7" aria-hidden />
+              </span>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       <div className="flex items-start justify-between gap-4">
         <div className="flex flex-col gap-2">

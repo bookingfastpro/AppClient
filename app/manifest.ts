@@ -23,9 +23,9 @@ export default function manifest(): MetadataRoute.Manifest {
     // A mismatch here shows as a flash of the wrong colour on launch.
     background_color: "#faf6ef",
     theme_color: "#faf6ef",
-    // Deliberately not "portrait". In standalone mode Android enforces
-    // this value, which would defeat the video player's rotate-to-
-    // landscape control (components/video/CustomVideoPlayer.tsx).
+    // Deliberately not "portrait". Android enforces this value in
+    // standalone mode, which would stop a member turning the phone
+    // sideways to watch a session fullscreen.
     orientation: "any",
     categories: ["health", "fitness", "lifestyle"],
     icons: [

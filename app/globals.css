@@ -227,53 +227,18 @@
   }
 
   /*
-    Landscape viewing without the Fullscreen API.
+    The landscape-player / rotated-player pair lived here: a CSS
+    rotation that made a portrait phone *look* like it was showing a
+    fullscreen video, built because iOS Safari refuses fullscreen to
+    anything but a native <video>.
 
-    This is the only way to fill an iPhone screen with a YouTube embed:
-    iOS Safari grants fullscreen to native <video> elements alone, and
-    the embed's video sits inside a cross-origin iframe we cannot reach.
-    So instead of asking the browser, we pin the player to the viewport
-    ourselves.
-
-    dvh/dvw rather than vh/vw: on iOS, vh counts the area behind the
-    browser's collapsing toolbars, so a vh-sized player overflows the
-    part of the screen you can actually see. The vh/vw line stays as a
-    fallback for browsers without dynamic viewport units.
+    It is gone because the player now uses YouTube's own controls, and
+    YouTube's fullscreen button lives inside the iframe where it can
+    reach that native video. A real fullscreen beats an imitation of one,
+    and the imitation brought its own problems — a rotated overlay the
+    page could still scroll behind, and a second orientation to keep in
+    step with the device's own.
   */
-  .landscape-player {
-    position: fixed;
-    inset: 0;
-    z-index: 50;
-    width: 100vw;
-    height: 100vh;
-    width: 100dvw;
-    height: 100dvh;
-    border-radius: 0;
-  }
-
-  /*
-    Applied on top of .landscape-player only while the device is
-    physically portrait: swap the axes and rotate around the centre so
-    the rotated box covers the viewport exactly.
-
-    When the phone is actually turned sideways the browser has already
-    rotated everything, and rotating again would put the video back on
-    its side — so this half is dropped and the plain fill above carries
-    it.
-  */
-  .rotated-player {
-    /* `inset: auto` must come before top/left, not after: it is the
-       shorthand for all four offsets, so writing it second would reset
-       the centring back to auto. */
-    inset: auto;
-    top: 50%;
-    left: 50%;
-    width: 100vh;
-    height: 100vw;
-    width: 100dvh;
-    height: 100dvw;
-    transform: translate(-50%, -50%) rotate(90deg);
-  }
 }
 
 /*

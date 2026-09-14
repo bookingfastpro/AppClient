@@ -1,20 +1,20 @@
 /**
  * Minimal surface of the YouTube IFrame Player API actually used by
- * CustomVideoPlayer. The full API has no official npm types; this covers
+ * YoutubePlayer. The full API has no official npm types; this covers
  * only what's called so a bad property name fails type-check instead of
  * silently no-oping at runtime.
+ *
+ * Playback controls (mute, volume, pause) are no longer listed: with
+ * YouTube's own controls on screen those are the player's business, and
+ * what we still drive from outside is limited to resuming at a position
+ * and reading progress.
  */
 export interface YTPlayer {
   playVideo(): void;
-  pauseVideo(): void;
   seekTo(seconds: number, allowSeekAhead: boolean): void;
-  mute(): void;
-  unMute(): void;
-  isMuted(): boolean;
-  setVolume(volume: number): void;
-  getVolume(): number;
   getCurrentTime(): number;
   getDuration(): number;
+  getIframe(): HTMLIFrameElement;
   destroy(): void;
 }
 
