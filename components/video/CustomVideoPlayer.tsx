@@ -67,6 +67,13 @@ export function CustomVideoPlayer({
   const [hasStarted, setHasStarted] = useState(false);
   const [hasEnded, setHasEnded] = useState(false);
   const [canFullscreen, setCanFullscreen] = useState(true);
+  /*
+    Whether the device is physically portrait. The landscape mode only
+    needs its 90deg rotation while it is — once the phone is actually
+    turned sideways the browser has rotated the page already, and
+    rotating again would lay the video back on its side.
+  */
+  const [isPortrait, setIsPortrait] = useState(true);
 
   const playingRef = useRef(playing);
   useEffect(() => {
@@ -192,6 +199,28 @@ export function CustomVideoPlayer({
   useEffect(() => {
     setCanFullscreen(supportsElementFullscreen(containerRef.current));
   }, []);
+
+  useEffect(() => {
+    const query = window.matchMedia("(orientation: portrait)");
+    const sync = () => setIsPortrait(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
+
+  /*
+    Locks the page behind the landscape player. Without it the document
+    still scrolls under a fixed overlay, which on a phone reads as the
+    video sliding around while you try to touch the controls.
+  */
+  useEffect(() => {
+    if (!isRotated) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [isRotated]);
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -392,7 +421,10 @@ export function CustomVideoPlayer({
       ref={containerRef}
       className={cn(
         "group relative aspect-video w-full overflow-hidden rounded-lg bg-forest-900",
-        isRotated && "rotated-player",
+        // The fill is unconditional in landscape mode; the rotation is
+        // only added while the device itself is still portrait.
+        isRotated && "landscape-player",
+        isRotated && isPortrait && "rotated-player",
       )}
       onMouseMove={revealControls}
       onTouchStart={revealControls}

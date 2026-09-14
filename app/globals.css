@@ -227,21 +227,49 @@
   }
 
   /*
-    Forces a landscape-looking player on a portrait phone screen even when
-    the Screen Orientation lock API isn't available (notably iOS Safari):
-    pin to the viewport, swap width/height, then rotate 90deg around the
-    center so the rotated box exactly covers the original viewport.
+    Landscape viewing without the Fullscreen API.
+
+    This is the only way to fill an iPhone screen with a YouTube embed:
+    iOS Safari grants fullscreen to native <video> elements alone, and
+    the embed's video sits inside a cross-origin iframe we cannot reach.
+    So instead of asking the browser, we pin the player to the viewport
+    ourselves.
+
+    dvh/dvw rather than vh/vw: on iOS, vh counts the area behind the
+    browser's collapsing toolbars, so a vh-sized player overflows the
+    part of the screen you can actually see. The vh/vw line stays as a
+    fallback for browsers without dynamic viewport units.
   */
-  .rotated-player {
+  .landscape-player {
     position: fixed;
     inset: 0;
     z-index: 50;
+    width: 100vw;
+    height: 100vh;
+    width: 100dvw;
+    height: 100dvh;
+    border-radius: 0;
+  }
+
+  /*
+    Applied on top of .landscape-player only while the device is
+    physically portrait: swap the axes and rotate around the centre so
+    the rotated box covers the viewport exactly.
+
+    When the phone is actually turned sideways the browser has already
+    rotated everything, and rotating again would put the video back on
+    its side — so this half is dropped and the plain fill above carries
+    it.
+  */
+  .rotated-player {
     top: 50%;
     left: 50%;
+    inset: auto;
     width: 100vh;
     height: 100vw;
+    width: 100dvh;
+    height: 100dvw;
     transform: translate(-50%, -50%) rotate(90deg);
-    border-radius: 0;
   }
 }
 
