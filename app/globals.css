@@ -262,9 +262,12 @@
     it.
   */
   .rotated-player {
+    /* `inset: auto` must come before top/left, not after: it is the
+       shorthand for all four offsets, so writing it second would reset
+       the centring back to auto. */
+    inset: auto;
     top: 50%;
     left: 50%;
-    inset: auto;
     width: 100vh;
     height: 100vw;
     width: 100dvh;
