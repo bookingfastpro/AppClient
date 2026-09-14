@@ -1,6 +1,7 @@
 "use client";
 
 import { deleteNotificationAction } from "@/lib/admin/notification-actions";
+import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 
 export function DeleteNotificationButton({
   notificationId,
@@ -10,21 +11,13 @@ export function DeleteNotificationButton({
   title: string;
 }) {
   return (
-    <form
+    <ConfirmActionButton
       action={deleteNotificationAction}
-      onSubmit={(e) => {
-        if (!window.confirm(`Supprimer la notification « ${title} » ? Cette action est irréversible.`)) {
-          e.preventDefault();
-        }
-      }}
-    >
-      <input type="hidden" name="notificationId" value={notificationId} />
-      <button
-        type="submit"
-        className="rounded-pill px-4 py-2 text-sm font-semibold text-error transition-colors hover:bg-error/10"
-      >
-        Supprimer
-      </button>
-    </form>
+      fields={{ notificationId }}
+      triggerLabel="Supprimer"
+      title={`Supprimer la notification « ${title} » ?`}
+      description="Elle ne sera plus visible par les membres qui ne l'ont pas encore lue. Cette action est irréversible."
+      confirmLabel="Supprimer définitivement"
+    />
   );
 }

@@ -1,9 +1,15 @@
-import type { ReactNode } from "react";
 import { requireAdmin } from "@/lib/auth/admin";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminMobileNav } from "@/components/admin/AdminMobileNav";
 
-export default async function AdminLayout({ children }: { children: ReactNode }) {
+/**
+ * `modal` is a parallel route slot (app/admin/@modal). It renders null
+ * via its default.tsx until an intercepting route fills it — see
+ * app/admin/@modal/(.)programs/[id]. It sits outside <main> because the
+ * dialog it renders lives in the browser's top layer and must not be
+ * constrained by the main column's width or padding.
+ */
+export default async function AdminLayout({ children, modal }: LayoutProps<"/admin">) {
   const user = await requireAdmin();
 
   return (
@@ -15,6 +21,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
           {children}
         </main>
       </div>
+      {modal}
     </div>
   );
 }

@@ -1,7 +1,9 @@
+import { SearchX } from "lucide-react";
 import { searchVideos } from "@/lib/db/queries";
 import { getViewerAccess } from "@/lib/access/subscription";
 import { VideoCard } from "@/components/video/VideoCard";
 import { SearchInput } from "@/components/video/SearchInput";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export default async function SearchPage({
   searchParams,
@@ -20,11 +22,12 @@ export default async function SearchPage({
       <SearchInput defaultValue={q} />
 
       {q.trim() && results.length === 0 && (
-        <div className="flex flex-col items-center gap-2 py-12 text-center">
-          <p className="text-body text-ink-600">
-            Aucune séance ne correspond à &laquo; {q} &raquo;.
-          </p>
-        </div>
+        <EmptyState
+          icon={SearchX}
+          title={`Aucun résultat pour « ${q} »`}
+          description="Essayez un mot plus court, ou parcourez les univers pour trouver une séance."
+          action={{ href: "/explore", label: "Voir les univers" }}
+        />
       )}
 
       {results.length > 0 && (

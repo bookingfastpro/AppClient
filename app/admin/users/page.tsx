@@ -1,5 +1,6 @@
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, UserSearch } from "lucide-react";
 import { getAllUsersForAdmin } from "@/lib/admin/queries";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { subscriptionStatusLabel, ACTIVE_STATUSES } from "@/lib/access/subscription";
 import { grantManualAccessAction, revokeManualAccessAction } from "@/lib/admin/subscription-actions";
 import { UserSearchInput } from "@/components/admin/UserSearchInput";
@@ -34,7 +35,7 @@ export default async function AdminUsersPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
+      <div className="animate-fade-in-up flex flex-col gap-1">
         <h1 className="text-headline text-ink-900">Utilisateurs</h1>
         <p className="text-body text-ink-600">
           {allUsers.length} utilisateur{allUsers.length > 1 ? "s" : ""} au total
@@ -44,12 +45,16 @@ export default async function AdminUsersPage({
       <UserSearchInput defaultValue={q} />
 
       {users.length === 0 ? (
-        <p className="text-body text-ink-600">Aucun utilisateur ne correspond à cette recherche.</p>
+        <EmptyState
+          icon={UserSearch}
+          title="Aucun utilisateur trouvé"
+          description="Aucun compte ne correspond à cette recherche. Essayez une autre adresse ou un autre nom."
+        />
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-beige bg-surface">
+        <div className="animate-fade-in-up overflow-x-auto rounded-lg border border-beige bg-surface [animation-delay:80ms]">
           <table className="w-full text-left">
             <thead>
-              <tr className="border-b border-beige text-label text-ink-300">
+              <tr className="border-b border-beige text-label text-ink-600">
                 <th className="px-4 py-3 font-semibold">Utilisateur</th>
                 <th className="px-4 py-3 font-semibold">Inscrit le</th>
                 <th className="px-4 py-3 font-semibold">Abonnement</th>
@@ -77,7 +82,7 @@ export default async function AdminUsersPage({
                             {u.fullName || u.email}
                           </p>
                           {u.fullName && (
-                            <p className="truncate text-xs text-ink-300">{u.email}</p>
+                            <p className="truncate text-xs text-ink-600">{u.email}</p>
                           )}
                         </div>
                       </div>

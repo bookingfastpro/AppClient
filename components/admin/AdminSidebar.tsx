@@ -15,7 +15,9 @@ export function AdminSidebar({ adminEmail }: { adminEmail: string | undefined })
         <Link href="/admin" className="font-display text-lg font-semibold text-ink-900">
           Administration
         </Link>
-        {adminEmail && <p className="mt-0.5 truncate text-xs text-ink-300">{adminEmail}</p>}
+        {/* ink-600, not ink-300: this is text to be read, and ink-300
+            measures 3.00:1 on cream (see the Readable-Ink Rule). */}
+        {adminEmail && <p className="mt-0.5 truncate text-xs text-ink-600">{adminEmail}</p>}
       </div>
 
       <nav className="flex flex-1 flex-col gap-1 px-3">

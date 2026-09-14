@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Search } from "lucide-react";
+import { Compass, Search } from "lucide-react";
 import { getCategoriesWithSample } from "@/lib/db/queries";
 import { UniverseCard } from "@/components/video/UniverseCard";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export const metadata: Metadata = { title: "Explorer" };
 
@@ -38,9 +39,11 @@ export default async function ExplorePage() {
       </div>
 
       {categories.length === 0 ? (
-        <p className="text-body text-ink-600">
-          Aucun univers pour le moment. Ils apparaîtront ici dès qu&apos;ils seront créés.
-        </p>
+        <EmptyState
+          icon={Compass}
+          title="Les univers arrivent bientôt"
+          description="Aucun univers n'est encore publié. Ils apparaîtront ici dès leur création."
+        />
       ) : (
         <div className="animate-fade-in-up grid grid-cols-2 gap-3 [animation-delay:120ms] lg:grid-cols-3">
           {categories.map((category) => (

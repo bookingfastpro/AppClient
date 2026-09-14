@@ -1,11 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Lock } from "lucide-react";
+import { HeartOff, Lock } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { getFavoriteVideos } from "@/lib/db/queries";
 import { hasActivePremiumAccess } from "@/lib/access/subscription";
 import { FavoriteButton } from "@/components/video/FavoriteButton";
-import { buttonVariants } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { formatDuration, formatLevel } from "@/lib/video/thumbnail-url";
 import { youtubeThumbnailUrl } from "@/lib/video/youtube";
 
@@ -29,12 +29,12 @@ export default async function FavoritesPage() {
       </div>
 
       {videos.length === 0 ? (
-        <div className="flex flex-col items-center gap-4 py-16 text-center">
-          <p className="text-body text-ink-600">Vos séances favorites apparaîtront ici.</p>
-          <Link href="/explore" className={buttonVariants({ variant: "primary" })}>
-            Explorer les séances
-          </Link>
-        </div>
+        <EmptyState
+          icon={HeartOff}
+          title="Aucun favori pour le moment"
+          description="Touchez le cœur sur une séance pour la retrouver ici en un geste."
+          action={{ href: "/explore", label: "Explorer les séances" }}
+        />
       ) : (
         <ul className="animate-fade-in-up flex flex-col gap-3">
           {videos.map((video) => {

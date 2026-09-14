@@ -16,9 +16,9 @@ function StatCard({
   return (
     <Link
       href={href}
-      className="flex flex-col gap-3 rounded-lg border border-beige bg-surface p-5 transition-shadow duration-200 ease-[var(--ease-standard)] hover:shadow-[var(--shadow-ambient-low)]"
+      className="group flex flex-col gap-3 rounded-lg border border-beige bg-surface p-5 transition-all duration-200 ease-[var(--ease-standard)] hover:-translate-y-0.5 hover:shadow-[var(--shadow-ambient-low)] active:translate-y-0 active:scale-[0.98]"
     >
-      <span className="flex size-10 items-center justify-center rounded-pill bg-sage-100 text-sage-600">
+      <span className="flex size-10 items-center justify-center rounded-pill bg-sage-100 text-sage-600 transition-transform duration-200 ease-[var(--ease-standard)] group-hover:scale-110">
         <Icon className="size-5" aria-hidden />
       </span>
       <div>
@@ -34,12 +34,12 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <div>
+      <div className="animate-fade-in-up">
         <h1 className="text-headline text-ink-900">Tableau de bord</h1>
         <p className="text-body mt-1 text-ink-600">Vue d&apos;ensemble de Yogella.</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="animate-fade-in-up grid grid-cols-2 gap-4 [animation-delay:80ms] lg:grid-cols-4">
         <StatCard icon={Users} label="Utilisateurs" value={stats.totalUsers} href="/admin/users" />
         <StatCard
           icon={ShieldCheck}

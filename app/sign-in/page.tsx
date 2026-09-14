@@ -8,9 +8,12 @@ export const metadata: Metadata = { title: "Se connecter" };
 export default async function SignInPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string }>;
+  searchParams: Promise<{ next?: string; form?: string }>;
 }) {
-  const { next } = await searchParams;
+  // ?form=1 renders the credentials sheet already open. It is what the
+  // "Se connecter" link falls back to when its click handler isn't
+  // there, so the page never depends on client JS to be usable.
+  const { next, form } = await searchParams;
 
   return (
     <div className="relative flex min-h-svh items-center justify-center overflow-hidden bg-forest-900 sm:p-10">
@@ -52,7 +55,7 @@ export default async function SignInPage({
           </p>
         </div>
 
-        <SignInSplash next={next} />
+        <SignInSplash next={next} defaultRevealed={form === "1"} />
       </div>
     </div>
   );

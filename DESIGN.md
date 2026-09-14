@@ -15,7 +15,7 @@ colors:
   sage-500: "oklch(62% 0.07 150)"
   sage-600: "#5f6b4f"
   sage-700: "#4e583f"
-  nav-active: "#b86b4f"
+  nav-active: "#a65a3f"
   forest-800: "oklch(32% 0.06 155)"
   forest-900: "oklch(24% 0.045 155)"
   terracotta-500: "oklch(62% 0.13 40)"
@@ -141,7 +141,25 @@ Constraints that keep it from leaking into the rest of the app:
 - These tokens are used by the mood tiles and their destination pages, nowhere else. A mood colour appearing on a video card, a button, or navigation chrome is a bug.
 
 ### Named Rules
-**The Active-Tab Exception.** `nav-active` (`#b86b4f`) marks the selected tab in the bottom bar, and nothing else. It sits close to terracotta in hue but is a separate token on purpose: terracotta still means "premium" everywhere else, and the two must never be swapped for one another. Because the bar is the one place the two could be confused, the premium badge never appears there.
+**The Active-Tab Exception.** `nav-active` (`#a65a3f`) marks the selected tab in the bottom bar, and nothing else. It sits close to terracotta in hue but is a separate token on purpose: terracotta still means "premium" everywhere else, and the two must never be swapped for one another. Because the bar is the one place the two could be confused, the premium badge never appears there.
+
+The value started as `#b86b4f`, which measured 3.71:1 against the cream ground. That clears the 3:1 bar for the icon, read as a graphic, but not the 4.5:1 that the 11–12px label beside it needs. `#a65a3f` is the same hue taken down just far enough to reach 4.69:1, so one token can still serve both. Any future adjustment to this colour has to be re-measured against `--color-cream`, not eyeballed.
+
+**The Readable-Ink Rule.** `ink-300` measures 3.00:1 on cream. That is enough for a decorative glyph — a search magnifier, a chevron, a disabled marker — and not enough for anything a person has to read. Text uses `ink-600` (6.61:1) or darker. The inactive tab label was the exception that proved it, and has been moved to `ink-600`.
+
+**The No-Dead-End Rule.** Every zero-data screen renders `components/ui/EmptyState`, never a bare sentence. The component is a glyph, one line of guidance, and — wherever the visitor can actually do something — a way out. An empty screen is where a new member is likeliest to leave, and a lone "Aucune séance." tells them what is missing without telling them what to do next.
+
+**The Confirm-Before-Destroying Rule.** Anything irreversible goes through `components/ui/ConfirmActionButton`, never `window.confirm` and never a bare submit. The dialog names the specific item, spells out the consequence, and shows a pending state while the action runs. `window.confirm` was doing the first job only: it drops the user into unstyled OS chrome, cannot be animated, and gives no feedback at all once confirmed, so a slow delete looks like nothing happened.
+
+**The One-Modal-Shape Rule.** Modals are `components/ui/Modal`, which wraps the native `<dialog>` — the focus trap, Escape handling, background inertness and top-layer stacking come from the platform rather than from hand-written code, because those are the parts custom modals get wrong. The panel is a bottom sheet below 640px and a centred card above it, matching the sign-in sheet so the app has one idea of "a surface that comes up over the page", not two. Modals are for confirmation and short focused input; anything longer is a page.
+
+**The Modal-Is-A-Route Rule.** A modal that shows a *thing* — a programme, a session, a member — is an intercepted route, not client state. There are two: `app/(app)/@modal/(.)programmes/[slug]` opens a programme over the home screen, and `app/admin/@modal/(.)programs/[id]` opens its editor over the admin list. In both cases the matching full page still renders on a refresh or a pasted link, and both halves call the same shared component (`ProgramDetail`, `ProgramEditor`) so they cannot drift apart. The payoff is that the URL stays honest: the modal is linkable, survives a reload, and closes on the browser's own back gesture.
+
+The matcher is `(.)` in both, which looks wrong next to the folder depth. It counts *route segments*, and neither a route group nor an `@slot` is one — so both interceptors sit at the level where their target is a direct child. Verify a new one against `.next/app-path-routes-manifest.json` rather than by eye.
+
+Client state (`useState`) is for modals that show a *question* rather than a thing, which is what `ConfirmActionButton` does.
+
+**The Exit-Is-Faster Rule.** Entrances run at `--duration-base` (250ms), exits at `--duration-fast` (150ms). A dismissal that takes as long as the reveal reads as the interface hesitating. Only `transform` and `opacity` are animated, so motion stays on the compositor; `prefers-reduced-motion` is handled globally in `globals.css` and needs no per-component guard.
 
 **The One Spark Rule.** Terracotta is premium-only. It never appears on free content, navigation, or generic UI chrome — the moment a user sees terracotta, they know they're looking at something that requires membership.
 

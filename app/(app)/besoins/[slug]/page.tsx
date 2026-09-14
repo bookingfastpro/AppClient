@@ -1,11 +1,12 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Sprout } from "lucide-react";
 import { getMoodBySlug } from "@/lib/moods";
 import { getVideosByCategorySlugs } from "@/lib/db/queries";
 import { getViewerAccess } from "@/lib/access/subscription";
 import { VideoCard } from "@/components/video/VideoCard";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export async function generateMetadata({
   params,
@@ -54,10 +55,12 @@ export default async function MoodPage({ params }: { params: Promise<{ slug: str
       </div>
 
       {videos.length === 0 ? (
-        <p className="text-body text-ink-600">
-          Aucune séance disponible pour ce besoin pour le moment. Revenez bientôt, de
-          nouveaux contenus arrivent chaque semaine.
-        </p>
+        <EmptyState
+          icon={Sprout}
+          title="Rien ici pour l'instant"
+          description="De nouvelles séances arrivent chaque semaine. En attendant, explorez les autres univers."
+          action={{ href: "/explore", label: "Voir les univers" }}
+        />
       ) : (
         <div className="animate-fade-in-up grid grid-cols-2 gap-4 [animation-delay:80ms] lg:grid-cols-3">
           {videos.map((video) => (

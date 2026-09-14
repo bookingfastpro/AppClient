@@ -4,6 +4,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Loader2, Maximize, Minimize, Pause, Play, RotateCw, Volume2, VolumeX, X } from "lucide-react";
 import { loadYoutubeIframeApi, YT_PLAYER_STATE, type YTPlayer } from "@/lib/video/youtube-player";
 import { recordWatchProgressAction } from "@/lib/video/watch-actions";
+import { youtubeThumbnailUrl } from "@/lib/video/youtube";
+import {
+  exitFullscreen,
+  getFullscreenElement,
+  onFullscreenChange,
+  requestFullscreen,
+  supportsElementFullscreen,
+} from "@/lib/video/fullscreen";
 import { cn } from "@/lib/utils";
 
 function formatTime(seconds: number) {
@@ -51,6 +59,14 @@ export function CustomVideoPlayer({
   const [showControls, setShowControls] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
+  /*
+    Playback has actually begun at least once. Until it has, an opaque
+    poster covers the iframe — see the overlay near the bottom of this
+    file for why that matters.
+  */
+  const [hasStarted, setHasStarted] = useState(false);
+  const [hasEnded, setHasEnded] = useState(false);
+  const [canFullscreen, setCanFullscreen] = useState(true);
 
   const playingRef = useRef(playing);
   useEffect(() => {
@@ -100,7 +116,9 @@ export function CustomVideoPlayer({
             if (cancelled) return;
             setPlaying(event.data === YT_PLAYER_STATE.PLAYING);
             setBuffering(event.data === YT_PLAYER_STATE.BUFFERING);
+            setHasEnded(event.data === YT_PLAYER_STATE.ENDED);
             if (event.data === YT_PLAYER_STATE.PLAYING) {
+              setHasStarted(true);
               setDuration(event.target.getDuration());
               revealControls();
             }
@@ -159,11 +177,20 @@ export function CustomVideoPlayer({
   }, []);
 
   useEffect(() => {
-    function onFullscreenChange() {
-      setIsFullscreen(document.fullscreenElement === containerRef.current);
-    }
-    document.addEventListener("fullscreenchange", onFullscreenChange);
-    return () => document.removeEventListener("fullscreenchange", onFullscreenChange);
+    // Both spellings: Safari fires webkitfullscreenchange, and listening
+    // only for the unprefixed event left this state permanently false —
+    // the icon never flipped and a second press re-requested fullscreen
+    // instead of leaving it.
+    return onFullscreenChange(() => {
+      setIsFullscreen(getFullscreenElement() === containerRef.current);
+    });
+  }, []);
+
+  // iPhone Safari has no element fullscreen, so the button there has to
+  // mean something else. Checked after mount because it depends on the
+  // real element.
+  useEffect(() => {
+    setCanFullscreen(supportsElementFullscreen(containerRef.current));
   }, []);
 
   useEffect(() => {
@@ -179,6 +206,25 @@ export function CustomVideoPlayer({
     if (playing) playerRef.current.pauseVideo();
     else playerRef.current.playVideo();
     revealControls();
+  }
+
+  /**
+   * Tapping the video surface while the controls are hidden only brings
+   * them back; it takes a second tap to pause.
+   *
+   * Without this the control bar is a moving target: it fades out after
+   * a few seconds, so a tap aimed at fullscreen or the scrubber lands on
+   * the full-size play/pause layer underneath and pauses the video
+   * instead. Reveal-then-act is what every native player does, and it is
+   * the difference between controls that work and controls you have to
+   * race.
+   */
+  function handleSurfaceTap() {
+    if (!showControls) {
+      revealControls();
+      return;
+    }
+    togglePlay();
   }
 
   function toggleMute() {
@@ -209,13 +255,63 @@ export function CustomVideoPlayer({
     playerRef.current?.seekTo(next, true);
   }
 
-  async function enterFullscreen() {
-    if (!containerRef.current) return;
+  function skip(seconds: number) {
+    if (!playerRef.current) return;
+    const target = Math.min(
+      Math.max(playerRef.current.getCurrentTime() + seconds, 0),
+      durationRef.current || Infinity,
+    );
+    handleSeek(target);
+    revealControls();
+  }
+
+  /**
+   * Scoped to the player rather than the document: a global listener
+   * would swallow the space bar while someone is typing elsewhere on the
+   * page. YouTube's own keyboard handling is off (disablekb=1), so these
+   * are the only shortcuts in play.
+   */
+  function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+    // The range inputs use arrows and space themselves; don't double-handle.
+    if ((event.target as HTMLElement).tagName === "INPUT") return;
+
+    switch (event.key) {
+      case " ":
+      case "k":
+        event.preventDefault();
+        togglePlay();
+        break;
+      case "ArrowLeft":
+        event.preventDefault();
+        skip(-10);
+        break;
+      case "ArrowRight":
+        event.preventDefault();
+        skip(10);
+        break;
+      case "f":
+        event.preventDefault();
+        void toggleFullscreen();
+        break;
+      case "m":
+        event.preventDefault();
+        toggleMute();
+        break;
+      default:
+        break;
+    }
+  }
+
+  /** Resolves true when the browser actually entered fullscreen. */
+  async function enterFullscreen(): Promise<boolean> {
+    if (!containerRef.current) return false;
     try {
-      await containerRef.current.requestFullscreen();
+      await requestFullscreen(containerRef.current);
+      return true;
     } catch {
-      // Fullscreen can be denied (e.g. iframe restrictions); the CSS
-      // rotation fallback below still makes landscape viewing work.
+      // Denied by a permissions policy, an embedding frame, or the
+      // platform. The caller decides what to do instead.
+      return false;
     }
   }
 
@@ -245,7 +341,7 @@ export function CustomVideoPlayer({
     } catch {
       // no-op: nothing to unlock if it was never locked
     }
-    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    if (getFullscreenElement()) void exitFullscreen().catch(() => {});
   }
 
   /** Races a promise against a timeout so a slow or hung permission prompt (e.g. fullscreen on some mobile browsers) can never block the CSS rotation fallback. */
@@ -253,12 +349,42 @@ export function CustomVideoPlayer({
     return Promise.race([promise, new Promise((resolve) => setTimeout(resolve, ms))]);
   }
 
-  function toggleFullscreen() {
-    if (isFullscreen) {
-      document.exitFullscreen().catch(() => {});
-    } else {
-      enterFullscreen();
+  /**
+   * The button must always do something visible.
+   *
+   * Element fullscreen is refused in more situations than it is granted:
+   * iPhone Safari has no such thing, an embedding frame without
+   * `allow="fullscreen"` blocks it, and some permissions policies reject
+   * it outright. Previously every one of those cases was swallowed by an
+   * empty catch and the button appeared broken. Now a refusal falls
+   * through to the CSS landscape mode, which needs no permission at all.
+   */
+  async function toggleFullscreen() {
+    if (isRotated) {
+      exitRotatedMode();
+      return;
     }
+
+    if (isFullscreen) {
+      await exitFullscreen().catch(() => {});
+      return;
+    }
+
+    if (canFullscreen && (await enterFullscreen())) return;
+
+    await toggleRotate();
+  }
+
+  /** Starts playback from a fresh user gesture, which is what unblocks it. */
+  function startPlayback() {
+    playerRef.current?.playVideo();
+    revealControls();
+  }
+
+  function replay() {
+    playerRef.current?.seekTo(0, true);
+    playerRef.current?.playVideo();
+    setHasEnded(false);
   }
 
   return (
@@ -270,8 +396,27 @@ export function CustomVideoPlayer({
       )}
       onMouseMove={revealControls}
       onTouchStart={revealControls}
+      onKeyDown={handleKeyDown}
+      // Focusable so the shortcuts have somewhere to land, and labelled
+      // so a screen reader announces what the region is.
+      tabIndex={0}
+      role="region"
+      aria-label={`Lecteur vidéo : ${title}`}
     >
-      <div ref={hostRef} className="size-full" />
+      {/*
+        pointer-events-none so nothing the viewer does can reach
+        YouTube's own layer — the "Regarder sur YouTube" button, the
+        channel link, or any overlay YouTube adds later. Our transparent
+        tap target below handles input instead.
+
+        It has to live on this wrapper rather than on the host div:
+        YT.Player *replaces* the element it is given with the iframe, so
+        a class set on the host disappears along with the host. The
+        wrapper survives, and the iframe inherits from it.
+      */}
+      <div className="pointer-events-none size-full">
+        <div ref={hostRef} className="size-full" />
+      </div>
 
       {!ready && (
         <div className="absolute inset-0 flex items-center justify-center bg-forest-900">
@@ -289,9 +434,59 @@ export function CustomVideoPlayer({
       <button
         type="button"
         aria-label={playing ? "Mettre en pause" : "Lire"}
-        onClick={togglePlay}
+        onClick={handleSurfaceTap}
         className="absolute inset-0 size-full cursor-pointer"
       />
+
+      {/*
+        The opaque poster. This is what actually hides the YouTube player.
+        `controls=0` suppresses YouTube's chrome while playing and while
+        paused, but NOT before playback has started: in that state the
+        embed shows the video's title, the channel name, a large red
+        YouTube button and a "Regarder sur YouTube" link.
+
+        Autoplay is blocked by practically every mobile browser, so that
+        is precisely the state a phone lands in. Covering it until the
+        first PLAYING event means the YouTube player is never seen, and
+        the tap that dismisses this poster is a fresh user gesture, which
+        is what makes playVideo() succeed where the automatic call failed.
+      */}
+      {!hasStarted && (
+        <button
+          type="button"
+          onClick={startPlayback}
+          aria-label={`Lire ${title}`}
+          className="group absolute inset-0 size-full cursor-pointer bg-forest-900 bg-cover bg-center"
+          style={{ backgroundImage: `url(${youtubeThumbnailUrl(youtubeId)})` }}
+        >
+          <span className="absolute inset-0 bg-forest-900/45 transition-colors duration-200 ease-[var(--ease-standard)] group-hover:bg-forest-900/55" />
+          <span className="absolute inset-0 flex items-center justify-center">
+            <span className="flex size-16 items-center justify-center rounded-pill bg-cream/90 text-forest-900 shadow-[var(--shadow-ambient-md)] backdrop-blur-sm transition-transform duration-200 ease-[var(--ease-standard)] group-hover:scale-110 group-active:scale-95">
+              {buffering ? (
+                <Loader2 className="size-7 animate-spin" aria-hidden />
+              ) : (
+                <Play className="size-7 translate-x-0.5" aria-hidden fill="currentColor" />
+              )}
+            </span>
+          </span>
+        </button>
+      )}
+
+      {/* Same reasoning at the other end: once a video ends, the embed is
+          free to show replay and related-video cards. */}
+      {hasEnded && (
+        <button
+          type="button"
+          onClick={replay}
+          aria-label="Revoir la séance"
+          className="group absolute inset-0 flex size-full cursor-pointer flex-col items-center justify-center gap-3 bg-forest-900/90"
+        >
+          <span className="flex size-16 items-center justify-center rounded-pill bg-cream/90 text-forest-900 transition-transform duration-200 ease-[var(--ease-standard)] group-hover:scale-110 group-active:scale-95">
+            <RotateCw className="size-7" aria-hidden />
+          </span>
+          <span className="text-title text-cream">Revoir la séance</span>
+        </button>
+      )}
 
       {isRotated && (
         <button
@@ -384,11 +579,13 @@ export function CustomVideoPlayer({
 
           <button
             type="button"
-            onClick={toggleFullscreen}
-            aria-label={isFullscreen ? "Quitter le plein écran" : "Plein écran"}
-            className="flex size-11 shrink-0 items-center justify-center rounded-pill text-cream"
+            onClick={() => void toggleFullscreen()}
+            aria-label={
+              isFullscreen || isRotated ? "Quitter le plein écran" : "Plein écran"
+            }
+            className="flex size-11 shrink-0 items-center justify-center rounded-pill text-cream transition-transform duration-150 ease-[var(--ease-standard)] hover:scale-105 active:scale-95"
           >
-            {isFullscreen ? (
+            {isFullscreen || isRotated ? (
               <Minimize className="size-5" aria-hidden />
             ) : (
               <Maximize className="size-5" aria-hidden />

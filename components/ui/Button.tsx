@@ -14,6 +14,10 @@ export const buttonVariants = cva(
           "bg-surface text-ink-900 border border-beige hover:bg-sand",
         premium:
           "bg-terracotta-500 text-cream hover:bg-terracotta-600",
+        // Destructive confirmation only — the button that actually
+        // deletes, never the one that opens the dialog asking about it.
+        danger:
+          "bg-error text-cream hover:brightness-95 focus-visible:outline-error",
       },
       size: {
         md: "h-12 px-7",

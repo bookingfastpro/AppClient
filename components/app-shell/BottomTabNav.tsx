@@ -25,7 +25,10 @@ export function BottomTabNav() {
               aria-current={active ? "page" : undefined}
               className={cn(
                 "flex min-w-0 flex-1 flex-col items-center gap-1 px-0.5 pt-2.5 pb-2 font-sans text-[11px] font-medium tracking-tight transition-colors duration-200 ease-[var(--ease-standard)] active:scale-95 min-[360px]:text-[12px]",
-                active ? "text-nav-active" : "text-ink-300",
+                // ink-300 measures 3.00:1 on cream — fine for a
+                // decorative glyph, short of the 4.5:1 an 11px label
+                // needs. ink-600 is the lightest step that passes.
+                active ? "text-nav-active" : "text-ink-600",
               )}
             >
               <Icon

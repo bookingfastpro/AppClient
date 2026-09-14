@@ -1,8 +1,14 @@
-import type { ReactNode } from "react";
 import { TopHeader } from "@/components/app-shell/TopHeader";
 import { BottomTabNav } from "@/components/app-shell/BottomTabNav";
 
-export default function AppLayout({ children }: { children: ReactNode }) {
+/**
+ * `modal` is a parallel route slot (app/(app)/@modal). It renders null
+ * via its default.tsx until an intercepting route fills it — see
+ * app/(app)/@modal/(.)programmes/[slug]. It sits outside <main> because
+ * the dialog lives in the browser's top layer and must not inherit the
+ * main column's width or padding.
+ */
+export default function AppLayout({ children, modal }: LayoutProps<"/">) {
   return (
     <div className="flex min-h-full flex-1 flex-col">
       <TopHeader />
@@ -10,6 +16,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         {children}
       </main>
       <BottomTabNav />
+      {modal}
     </div>
   );
 }

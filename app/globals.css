@@ -68,8 +68,14 @@
     The active tab in the bottom bar. Deliberately its own token rather
     than terracotta: the two are close in hue, but terracotta means
     "premium" everywhere else and must stay unambiguous.
+
+    Measured 4.69:1 against --color-cream. The tab label is 11-12px, so
+    WCAG AA asks 4.5:1 for it; the originally chosen #b86b4f came to
+    3.71:1, which clears the 3:1 bar for the icon as a graphic but not
+    the one for its label. This is the same hue taken down just far
+    enough to pass, so icon and label can keep sharing one token.
   */
-  --color-nav-active: #b86b4f;
+  --color-nav-active: #a65a3f;
 
   /* Semantic */
   --color-error: oklch(52% 0.15 25);
@@ -260,6 +266,81 @@
 .animate-fade-in-up {
   opacity: 0;
   animation: fade-in-up var(--duration-slow) var(--ease-standard) forwards;
+}
+
+/*
+  Modal — built on the native <dialog>, which already provides the focus
+  trap, Escape-to-close, inert background and top-layer stacking. Those
+  are the parts that hand-rolled modals get wrong, so the only job left
+  here is appearance and motion.
+
+  The UA stylesheet gives <dialog> a centred box with its own border,
+  padding and width. All of that is reset so the element becomes a
+  full-viewport stage, and the panel inside is what we actually position
+  and animate: a bottom sheet on phones, a centred card from sm up.
+*/
+@layer components {
+  .modal {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    overflow: hidden;
+  }
+
+  .modal::backdrop {
+    background: oklch(20% 0.01 155 / 0.45);
+    opacity: 0;
+    transition: opacity var(--duration-base) var(--ease-standard);
+  }
+
+  .modal[data-state="open"]::backdrop {
+    opacity: 1;
+  }
+
+  /*
+    The panel starts offset and transparent. Only transform and opacity
+    are animated, so the whole thing stays on the compositor.
+  */
+  .modal-panel {
+    opacity: 0;
+    transform: translateY(100%);
+    transition:
+      opacity var(--duration-base) var(--ease-standard),
+      transform var(--duration-base) var(--ease-standard);
+  }
+
+  .modal[data-state="open"] .modal-panel {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /*
+    Exit runs at roughly 75% of the entrance. A dismissal that takes as
+    long as the reveal reads as the interface hesitating.
+  */
+  .modal[data-state="closing"]::backdrop,
+  .modal[data-state="closing"] .modal-panel {
+    transition-duration: var(--duration-fast);
+  }
+
+  /*
+    From sm up the panel is a centred card rather than a sheet, so it
+    rises a short distance instead of sliding in from off-screen.
+  */
+  @media (min-width: 640px) {
+    .modal-panel {
+      transform: translateY(12px) scale(0.98);
+    }
+
+    .modal[data-state="open"] .modal-panel {
+      transform: translateY(0) scale(1);
+    }
+  }
 }
 
 /*
